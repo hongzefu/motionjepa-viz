@@ -62,6 +62,25 @@
 </style>
 </head>
 <body>
+<!--MJNAV_START-->
+<style>
+#mjNav{position:fixed;left:12px;bottom:12px;z-index:99999;display:flex;gap:8px;align-items:center;
+ background:rgba(23,25,35,.94);border:1px solid #262938;border-radius:8px;padding:7px 12px;
+ font:12px/1.4 -apple-system,"SF Pro Text",Segoe UI,sans-serif;color:#e4e7ee;box-shadow:0 4px 18px rgba(0,0,0,.45);}
+#mjNav a{color:#4c8bf5;text-decoration:none;font-weight:600;}
+#mjNav a:hover{text-decoration:underline;}
+#mjNav .sep{color:#3a3f52;}
+#mjNav b{color:#e4e7ee;font-weight:600;}
+#mjNav .mut{color:#8b90a0;}
+</style>
+<div id="mjNav">
+ <a href="../index.html">← 对比首页</a><span class="sep">|</span>
+ <span class="mut">run</span> <b>localDiT_4env_dual</b><span class="sep">·</span>
+ <span class="mut">ckpt</span> <b>checkpoint_epoch_16.pt (EMA)</b><span class="sep">·</span>
+ <span class="mut">data</span> <b>dataset-4env-v2 / dataset-token</b>
+</div>
+<!--MJNAV_END-->
+
 <div class="container">
   <div class="left">
     <div class="controls">
