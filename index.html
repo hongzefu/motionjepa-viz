@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Motion-JEPA — Motion Embedding 交互式可视化（对比）</title>
+<title>Motion-JEPA — Motion Embedding 交互式可视化（多特征流对比）</title>
 <style>
-  :root{--bg:#0f1116;--panel:#171923;--text:#e4e7ee;--muted:#8b90a0;--accent:#4c8bf5;--border:#262938;--good:#46c08a;}
+  :root{--bg:#0f1116;--panel:#171923;--text:#e4e7ee;--muted:#8b90a0;--accent:#4c8bf5;--border:#262938;--good:#46c08a;--warn:#e0a648;}
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);
     font-family:-apple-system,"SF Pro Text",Segoe UI,"PingFang SC","Microsoft YaHei",sans-serif;
@@ -19,19 +19,28 @@
   .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
   .card.primary{border-color:#2f5fb0;box-shadow:0 0 0 1px #2f5fb0 inset;}
   .card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .run{font-size:16px;font-weight:700;}
-  .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+  .run{font-size:15px;font-weight:700;word-break:break-all;}
+  .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;white-space:nowrap;}
   .badge.new{background:rgba(70,192,138,.16);color:var(--good);border:1px solid rgba(70,192,138,.4);}
   .badge.old{background:rgba(139,144,160,.14);color:var(--muted);border:1px solid var(--border);}
+  .badge.run{background:rgba(224,166,72,.16);color:var(--warn);border:1px solid rgba(224,166,72,.4);}
   a.open{color:var(--accent);text-decoration:none;font-weight:600;font-size:13px;white-space:nowrap;}
   a.open:hover{text-decoration:underline;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
-  td{padding:7px 0;vertical-align:top;border-top:1px solid var(--border);}
-  td:first-child{color:var(--muted);width:88px;white-space:nowrap;padding-right:12px;}
+  td{padding:6px 0;vertical-align:top;border-top:1px solid var(--border);}
+  td:first-child{color:var(--muted);width:74px;white-space:nowrap;padding-right:12px;}
   .sub{color:var(--muted);font-size:11.5px;margin-top:2px;}
+  .stream{font-size:12px;font-weight:600;}
+  .s-sig{color:#7aa2ff;} .s-dino{color:#46c08a;} .s-flow{color:#e0a648;}
   code{font-family:"SF Mono",Menlo,monospace;font-size:12px;background:var(--bg);
     border:1px solid var(--border);border-radius:4px;padding:1px 5px;}
   h2{font-size:17px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .cmp{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--panel);
+    border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .cmp th,.cmp td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;}
+  .cmp th{color:var(--accent);font-weight:600;font-size:12px;background:rgba(76,139,245,.06);}
+  .cmp tr:last-child td{border-bottom:none;}
+  .cmp td:first-child{font-weight:600;width:auto;white-space:normal;color:var(--text);}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
   @media(max-width:760px){.grid2{grid-template-columns:1fr;}}
   .box{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
@@ -47,40 +56,114 @@
 <body>
 <div class="wrap">
   <h1>Motion-JEPA · Motion Embedding 交互式散点图</h1>
-  <p class="lead">两次 <b>双流（SigLIP + DINOv3）</b> 训练的 motion token 嵌入（编码器读出 → t-SNE / UMAP 2D）。
-  点开任一页面：散点按 <code>task / episode / variant</code> 着色，悬停/点击某点即播放该 chunk 对应的真实视频片段。
-  两次训练<b>模型结构相同</b>，差异主要在<b>数据集版本与任务套件</b>。</p>
+  <p class="lead">同一套 4 环境数据上、<b>不同特征流配置</b>的 Motion-JEPA 训练得到的 motion token 嵌入
+  （编码器读出 → t-SNE / UMAP 2D）。点开任一页面：散点按 <code>task / episode / variant</code> 着色，
+  悬停 / 点击某点即播放该 chunk 对应的真实视频片段。各 run <b>模型骨干相同</b>，差异在<b>特征流（单流 / 双流 / 三流+光流）</b>、
+  <b>重建监督目标</b>与<b>数据集版本</b>。</p>
 
   <div class="cards">
+
   <div class="card primary">
     <div class="card-head">
-      <div class="run">localDiT_4env_v3_dual <span class="badge new">最新</span></div>
-      <a class="open" href="localDiT_4env_v3_dual_epoch8/interactive.html">打开交互式散点图 →</a>
+      <div class="run">localDiT_4env_v3_dual <span class="badge new">最新 · epoch 40</span></div>
+      <a class="open" href="localDiT_4env_v3_dual_epoch40/interactive.html">打开散点图 →</a>
     </div>
     <table>
-      <tr><td>检查点</td><td>checkpoint_epoch_8.pt (EMA)<div class="sub">epoch 8 / 40（训练中最新快照）</div></td></tr>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span></span>（双流，encoder 输入 2432）</td></tr>
+      <tr><td>监督</td><td>siglip·MSE + dino·MSE</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
       <tr><td>数据集</td><td><code>dataset-4env-v3 / dataset-token</code></td></tr>
-      <tr><td>4 个任务</td><td>ButtonUnmask · ButtonUnmaskSwap · VideoUnmask · VideoUnmaskSwap</td></tr>
-      <tr><td>变体</td><td>exec（4 任务）+ demo（VideoUnmask / VideoUnmaskSwap）</td></tr>
-      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99；motion_filter 丢弃 30 chunk（8.5%））</td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
     </table>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <div class="run">localDiT_4env_dual <span class="badge old">既有</span></div>
-      <a class="open" href="localDiT_4env_dual_epoch16/interactive.html">打开交互式散点图 →</a>
-    </div>
-    <table>
-      <tr><td>检查点</td><td>checkpoint_epoch_16.pt (EMA)<div class="sub">epoch 16（离线评估时段的快照）</div></td></tr>
-      <tr><td>数据集</td><td><code>dataset-4env-v2 / dataset-token</code></td></tr>
-      <tr><td>4 个任务</td><td>ButtonUnmaskSwap · PatternLock · StopCube · VideoPlaceOrder</td></tr>
-      <tr><td>变体</td><td>exec + 部分任务含第二变体（PatternLock / VideoPlaceOrder）</td></tr>
-      <tr><td>散点样本</td><td>N = 513 chunk（episodes 90–99；motion_filter 丢弃近静止 chunk）</td></tr>
-    </table>
-  </div>
   </div>
 
-  <h2>训练配置（两次运行相同）</h2>
+  <div class="card">
+    <div class="card-head">
+      <div class="run">localDiT_4env_v3_single <span class="badge new">epoch 40</span></div>
+      <a class="open" href="localDiT_4env_v3_single_epoch40/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span></span> 单流（纯 SigLIP，encoder 输入 1152）</td></tr>
+      <tr><td>监督</td><td>siglip·MSE（<code>dino.enabled=false</code>）</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v3 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="run">localDiT_4env_v3_nosiglip <span class="badge new">epoch 40</span></div>
+      <a class="open" href="localDiT_4env_v3_nosiglip_epoch40/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-dino">DINOv3</span></span> 监督（encoder 仍读双流 2432，但只重建 DINO）</td></tr>
+      <tr><td>监督</td><td>dino·MSE（<code>loss.siglip_weight=0</code> · 纯 DINO 监督）</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v3 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="run">localDiT_4env_v4_flowSliding <span class="badge run">训练中 · epoch 4</span></div>
+      <a class="open" href="localDiT_4env_v4_flowSliding_epoch4/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
+      <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sliding</b>，flow_weight=1.0）</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_4.pt (EMA)<div class="sub">epoch 4 · 训练进行中的早期快照</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="run">localDiT_4env_v4_flowSum <span class="badge run">训练中 · epoch 4</span></div>
+      <a class="open" href="localDiT_4env_v4_flowSum_epoch4/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
+      <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sum</b>，flow_weight=0.4 降权）</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_4.pt (EMA)<div class="sub">epoch 4 · 训练进行中的早期快照</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="run">localDiT_4env_dual <span class="badge old">既有 · v2</span></div>
+      <a class="open" href="localDiT_4env_dual_epoch16/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span></span>（双流，encoder 输入 2432）</td></tr>
+      <tr><td>监督</td><td>siglip·MSE + dino·MSE</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_16.pt (EMA)<div class="sub">epoch 16 · 早期 v2 数据集运行</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v2 / dataset-token</code>（任务套件不同）</td></tr>
+      <tr><td>散点样本</td><td>N = 513 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  </div>
+
+  <h2>各 run 差异一览</h2>
+  <table class="cmp">
+    <tr><th>run</th><th>特征流 / encoder 输入</th><th>重建监督</th><th>数据集</th><th>检查点</th><th>N</th></tr>
+    <tr><td>v3_dual</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>v3_single</td><td>SigLIP → 1152</td><td>siglip</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>v3_nosiglip</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>dino（siglip_weight=0）</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>v4_flowSliding</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sliding, w=1.0)</td><td>v4</td><td>epoch 4 · 训练中</td><td>323</td></tr>
+    <tr><td>v4_flowSum</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum, w=0.4)</td><td>v4</td><td>epoch 4 · 训练中</td><td>323</td></tr>
+    <tr><td>dual (v2)</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v2</td><td>epoch 16</td><td>513</td></tr>
+  </table>
+  <p class="note">v3 / v4 共享同一批 4 环境源视频与 motion_filter 选择，故 5 个新 run 的散点样本完全一致：
+  N = 323（ButtonUnmask 78 · ButtonUnmaskSwap 122 · VideoUnmask 46 · VideoUnmaskSwap 77；变体 exec 281 + demo 42）。
+  v4 两个光流 run 仍在训练，挂的是 epoch 4 早期快照，表征尚未成熟。</p>
+
+  <h2>共享骨干（所有 run 相同）</h2>
   <div class="grid2">
     <div class="box">
       <h3>模型 / 架构</h3>
@@ -89,7 +172,7 @@
         <div><span></span> motion dim 384，M=1 token；hidden 768 / depth 8 / heads 12</div>
         <div><span></span> spatial_pool=false，encoder_stride=2</div>
         <div><span>DiT 解码器</span> hidden 768 / depth 4 / heads 12，window_size=7，local</div>
-        <div><span>双流</span> SigLIP 1152 ⊕ DINOv3 1280 → encoder 输入 <b>2432</b></div>
+        <div><span>多流</span> 各路 delta 各自除 RMS 后 concat 喂共享 encoder；每路一个镜像解码器</div>
         <div><span>状态分支</span> StateResidualMLP，13 维 delta</div>
       </div>
     </div>
@@ -97,27 +180,29 @@
       <h3>chunk / 优化 / 正则</h3>
       <div class="kv">
         <div><span>chunk</span> K = max_horizon = <b>16</b>，stride=1，delta_mode=from_current</div>
-        <div><span>优化</span> AdamW lr 3e-4，wd 1e-4，fp32，batch 8/卡，max_epochs 40</div>
+        <div><span>优化</span> AdamW lr 3e-4，wd 1e-4，fp32，max_epochs 40</div>
         <div><span>正则</span> SIGReg 把 motion 推向 N(0,I)，带 warmup</div>
-        <div><span>运动过滤</span> token_mag ≥ 0.97（StopCube override 0.8，仅含 StopCube 的 v2 生效）</div>
+        <div><span>运动过滤</span> token_mag ≥ 0.97（StopCube override 0.8）</div>
         <div><span>EMA</span> decay 0.999，验证 / 可视化用 EMA 权重</div>
-        <div><span>损失</span> siglip·MSE + dino·MSE + 0.003·SIGReg + 1.0·MSE(state)</div>
+        <div><span>光流（三流）</span> anchor-indexed，(K,256,2)，按 flow_rms 归一、<b>不做 delta</b></div>
       </div>
     </div>
   </div>
 
-  <h2>数据集格式（两版本结构一致，按 episode 一组 raw <code>.bin</code>）</h2>
+  <h2>数据集格式（按 episode 一组 raw <code>.bin</code>，chunk 级 seek 读取）</h2>
   <div class="box">
     <div class="kv">
       <div><span>tokens/</span> SigLIP，<b>bf16</b>，每帧 256 patch × 1152 dim</div>
       <div><span>dino-tokens/</span> DINOv3（vith16plus），<b>bf16</b>，每帧 256 × 1280 dim</div>
-      <div><span>states/</span> <b>fp32</b>，13 维归一化本体感知 delta（bf16 尾数太粗，故用 fp32）</div>
-      <div><span>norm_stats.json</span> 状态分位归一 q01/q99 → [-1,1]；token_delta_rms / dino_token_delta_rms 两路各自除 RMS 后 concat</div>
+      <div><span>flow-tokens-*/</span> 光流（仅 v4），<b>fp32</b>，anchor-indexed 每条 record (K,256,2)；sliding / sum 两种</div>
+      <div><span>states/</span> <b>fp32</b>，13 维归一化本体感知 delta</div>
+      <div><span>norm_stats.json</span> 状态分位归一 q01/q99 → [-1,1]；token_delta_rms / dino_token_delta_rms / flow_rms_{sliding,sum} 各自归一</div>
       <div><span>chunk_motion.npz</span> 每 chunk 运动幅度（运动过滤用）</div>
       <div><span>metadata.json</span> 每 episode 的 frame_stride 与 source_video</div>
-      <div><span>抽取参数</span> image 256 / patch 16 / <b>frame_stride 2</b>；chunk 级 seek 读取，零内存驻留</div>
+      <div><span>抽取参数</span> image 256 / patch 16 / <b>frame_stride 2</b>；零内存驻留</div>
     </div>
-    <p class="note">读取按 <code>__getitem__</code> seek 取 K+1 帧并预计算 delta；token-delta 与 state-delta 经线性投影加法融合进编码器。</p>
+    <p class="note">读取按 <code>__getitem__</code> seek 取 K+1 帧并预计算 delta（光流为按 start 取单条 anchor record）；
+    多路特征 concat 后喂共享 encoder 压成 motion token。</p>
   </div>
 
   <p class="foot">Motion-JEPA · 训练后定性评估视图 · 由 scripts/visualize_motion.py + build_viz_html.py 生成</p>
