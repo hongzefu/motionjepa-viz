@@ -107,13 +107,13 @@
 
   <div class="card">
     <div class="card-head">
-      <div class="run">localDiT_4env_v4_flowSliding <span class="badge run">训练中 · epoch 8</span></div>
-      <a class="open" href="localDiT_4env_v4_flowSliding_epoch8/interactive.html">打开散点图 →</a>
+      <div class="run">localDiT_4env_v4_flowSliding <span class="badge new">epoch 40 ✓</span></div>
+      <a class="open" href="localDiT_4env_v4_flowSliding_epoch40/interactive.html">打开散点图 →</a>
     </div>
     <table>
       <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
       <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sliding</b>，flow_weight=1.0）</td></tr>
-      <tr><td>检查点</td><td>checkpoint_epoch_8.pt (EMA)<div class="sub">epoch 8 · 训练进行中的快照</div></td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
       <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
       <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
     </table>
@@ -121,13 +121,13 @@
 
   <div class="card">
     <div class="card-head">
-      <div class="run">localDiT_4env_v4_flowSum <span class="badge run">训练中 · epoch 8</span></div>
-      <a class="open" href="localDiT_4env_v4_flowSum_epoch8/interactive.html">打开散点图 →</a>
+      <div class="run">localDiT_4env_v4_flowSum <span class="badge new">epoch 40 ✓</span></div>
+      <a class="open" href="localDiT_4env_v4_flowSum_epoch40/interactive.html">打开散点图 →</a>
     </div>
     <table>
       <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
       <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sum</b>，flow_weight=0.4 降权）</td></tr>
-      <tr><td>检查点</td><td>checkpoint_epoch_8.pt (EMA)<div class="sub">epoch 8 · 训练进行中的快照</div></td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
       <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
       <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
     </table>
@@ -155,13 +155,13 @@
     <tr><td>v3_dual</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v3_single</td><td>SigLIP → 1152</td><td>siglip</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v3_nosiglip</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>dino（siglip_weight=0）</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
-    <tr><td>v4_flowSliding</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sliding, w=1.0)</td><td>v4</td><td>epoch 8 · 训练中</td><td>323</td></tr>
-    <tr><td>v4_flowSum</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum, w=0.4)</td><td>v4</td><td>epoch 8 · 训练中</td><td>323</td></tr>
+    <tr><td>v4_flowSliding</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sliding, w=1.0)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>v4_flowSum</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum, w=0.4)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>dual (v2)</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v2</td><td>epoch 16</td><td>513</td></tr>
   </table>
   <p class="note">v3 / v4 共享同一批 4 环境源视频与 motion_filter 选择，故 5 个新 run 的散点样本完全一致：
   N = 323（ButtonUnmask 78 · ButtonUnmaskSwap 122 · VideoUnmask 46 · VideoUnmaskSwap 77；变体 exec 281 + demo 42）。
-  v4 两个光流 run 仍在训练，挂的是 epoch 8 快照，表征尚未完全成熟。</p>
+  v4 两个光流 run 已训练完成（epoch 40）。</p>
 
   <h2>共享骨干（所有 run 相同）</h2>
   <div class="grid2">
