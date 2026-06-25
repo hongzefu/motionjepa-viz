@@ -63,9 +63,9 @@
 
   <div class="cards">
 
-  <div class="card primary">
+  <div class="card">
     <div class="card-head">
-      <div class="run">localDiT_4env_v3_dual <span class="badge new">最新 · epoch 40</span></div>
+      <div class="run">localDiT_4env_v3_dual <span class="badge new">epoch 40</span></div>
       <a class="open" href="localDiT_4env_v3_dual_epoch40/interactive.html">打开散点图 →</a>
     </div>
     <table>
@@ -133,6 +133,20 @@
     </table>
   </div>
 
+  <div class="card primary">
+    <div class="card-head">
+      <div class="run">localDiT_4env_v4_flowSumDense <span class="badge new">epoch 40 ✓ · 最新</span></div>
+      <a class="open" href="localDiT_4env_v4_flowSumDense_epoch40/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
+      <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sum · dense decode</b>，flow_weight=0.4 降权）<div class="sub">flow 解码器用 ConvexUpSample 上采样头重建每 patch 16×16×2=512 维<b>稠密</b>光流（flowSum 是 pool 后 2 维 patch 级）；encoder 输入两者相同</div></td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
   <div class="card">
     <div class="card-head">
       <div class="run">localDiT_4env_dual <span class="badge old">既有 · v2</span></div>
@@ -157,11 +171,12 @@
     <tr><td>v3_nosiglip</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>dino（siglip_weight=0）</td><td>v3</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v4_flowSliding</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sliding, w=1.0)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v4_flowSum</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum, w=0.4)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>v4_flowSumDense</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum <b>dense</b>, w=0.4)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>dual (v2)</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v2</td><td>epoch 16</td><td>513</td></tr>
   </table>
-  <p class="note">v3 / v4 共享同一批 4 环境源视频与 motion_filter 选择，故 5 个新 run 的散点样本完全一致：
+  <p class="note">v3 / v4 共享同一批 4 环境源视频与 motion_filter 选择，故 6 个新 run 的散点样本完全一致：
   N = 323（ButtonUnmask 78 · ButtonUnmaskSwap 122 · VideoUnmask 46 · VideoUnmaskSwap 77；变体 exec 281 + demo 42）。
-  v4 两个光流 run 已训练完成（epoch 40）。</p>
+  v4 三个光流 run（flowSliding / flowSum / flowSumDense）已训练完成（epoch 40）。</p>
 
   <h2>共享骨干（所有 run 相同）</h2>
   <div class="grid2">
@@ -184,7 +199,7 @@
         <div><span>正则</span> SIGReg 把 motion 推向 N(0,I)，带 warmup</div>
         <div><span>运动过滤</span> token_mag ≥ 0.97（StopCube override 0.8）</div>
         <div><span>EMA</span> decay 0.999，验证 / 可视化用 EMA 权重</div>
-        <div><span>光流（三流）</span> anchor-indexed，(K,256,2)，按 flow_rms 归一、<b>不做 delta</b></div>
+        <div><span>光流（三流）</span> encoder 输入 (K,256,2)，按 flow_rms 归一、<b>不做 delta</b>；sliding=anchor 单条 record，sum=neighbour 相邻帧对累积（flowSumDense 再用 ConvexUpSample 重建 512 维稠密光流）</div>
       </div>
     </div>
   </div>
