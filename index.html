@@ -133,14 +133,44 @@
     </table>
   </div>
 
-  <div class="card primary">
+  <div class="card">
     <div class="card-head">
-      <div class="run">localDiT_4env_v4_flowSumDense <span class="badge new">epoch 40 ✓ · 最新</span></div>
+      <div class="run">localDiT_4env_v4_flowSumDense <span class="badge new">epoch 40 ✓</span></div>
       <a class="open" href="localDiT_4env_v4_flowSumDense_epoch40/interactive.html">打开散点图 →</a>
     </div>
     <table>
       <tr><td>特征流</td><td><span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流，encoder 输入 2434）</td></tr>
       <tr><td>监督</td><td>siglip + dino + flow·MSE（光流 <b>sum · dense decode</b>，flow_weight=0.4 降权）<div class="sub">flow 解码器用 ConvexUpSample 上采样头重建每 patch 16×16×2=512 维<b>稠密</b>光流（flowSum 是 pool 后 2 维 patch 级）；encoder 输入两者相同</div></td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card primary">
+    <div class="card-head">
+      <div class="run">vit_4env_v1_3stream <span class="badge new">epoch 40 ✓ · 最新</span></div>
+      <a class="open" href="vit_4env_v1_3stream_epoch40/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>编码器</td><td><span class="stream"><b>ViT-base 像素前端</b></span>（端到端从像素学运动，<b>非</b>预抽 token-delta）</td></tr>
+      <tr><td>特征流</td><td>decoder 重建 <span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流 sum dense，作冻结 target）</td></tr>
+      <tr><td>监督</td><td>siglip + dino + flow(sum dense, w=0.4) + state</td></tr>
+      <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
+      <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
+      <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="run">vit_4env_v1_3stream_nostate <span class="badge new">epoch 40 ✓</span></div>
+      <a class="open" href="vit_4env_v1_3stream_nostate_epoch40/interactive.html">打开散点图 →</a>
+    </div>
+    <table>
+      <tr><td>编码器</td><td><span class="stream"><b>ViT-base 像素前端</b></span>（端到端从像素学运动）</td></tr>
+      <tr><td>特征流</td><td>decoder 重建 <span class="stream"><span class="s-sig">SigLIP</span> ⊕ <span class="s-dino">DINOv3</span> ⊕ <span class="s-flow">光流</span></span>（三流 sum dense）</td></tr>
+      <tr><td>监督</td><td>siglip + dino + flow(sum dense, w=0.4)<div class="sub">state 消融对照（state.enabled=false）</div></td></tr>
       <tr><td>检查点</td><td>checkpoint_epoch_40.pt (EMA)<div class="sub">epoch 40 / 40 · 训练完成</div></td></tr>
       <tr><td>数据集</td><td><code>dataset-4env-v4 / dataset-token</code></td></tr>
       <tr><td>散点样本</td><td>N = 323 chunk（episodes 90–99）</td></tr>
@@ -172,11 +202,13 @@
     <tr><td>v4_flowSliding</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sliding, w=1.0)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v4_flowSum</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum, w=0.4)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>v4_flowSumDense</td><td>SigLIP ⊕ DINOv3 ⊕ 光流 → 2434</td><td>siglip + dino + flow(sum <b>dense</b>, w=0.4)</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>vit_3stream</td><td><b>ViT-base 像素前端</b> → 768（decoder 重建 SigLIP⊕DINOv3⊕光流 sum dense）</td><td>siglip + dino + flow(sum dense) + state</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
+    <tr><td>vit_3stream_nostate</td><td><b>ViT-base 像素前端</b> → 768（同上，state 消融对照）</td><td>siglip + dino + flow(sum dense)，无 state</td><td>v4</td><td>epoch 40 ✓</td><td>323</td></tr>
     <tr><td>dual (v2)</td><td>SigLIP ⊕ DINOv3 → 2432</td><td>siglip + dino</td><td>v2</td><td>epoch 16</td><td>513</td></tr>
   </table>
-  <p class="note">v3 / v4 共享同一批 4 环境源视频与 motion_filter 选择，故 6 个新 run 的散点样本完全一致：
+  <p class="note">所有 v3 / v4 run（含 2 个 ViT 前端 run）共享同一批 4 环境源视频与 motion_filter 选择，故 8 个新 run 的散点样本完全一致：
   N = 323（ButtonUnmask 78 · ButtonUnmaskSwap 122 · VideoUnmask 46 · VideoUnmaskSwap 77；变体 exec 281 + demo 42）。
-  v4 三个光流 run（flowSliding / flowSum / flowSumDense）已训练完成（epoch 40）。</p>
+  最新 2 个 <b>vit_4env_v1_3stream</b>（含 state 消融对照）用可训练 ViT-base 像素前端替换预抽 token-delta 编码器、端到端从像素学运动；其余 6 个 localDiT run 编码器吃预抽 token-delta。三者 decoder / 损失 / SIGReg / 数据集与运动过滤完全一致。</p>
 
   <h2>共享骨干（所有 run 相同）</h2>
   <div class="grid2">
@@ -185,7 +217,7 @@
       <div class="kv">
         <div><span>运动编码器</span> chunk-based，motion_mode=<b>local</b></div>
         <div><span></span> motion dim 384，M=1 token；hidden 768 / depth 8 / heads 12</div>
-        <div><span></span> spatial_pool=false，encoder_stride=2</div>
+        <div><span></span> spatial_pool=false，encoder_stride=2<div class="sub">vit_3stream 例外：ViT-base 像素前端（spatial_pool=true / encoder_stride=1），其余维持现状</div></div>
         <div><span>DiT 解码器</span> hidden 768 / depth 4 / heads 12，window_size=7，local</div>
         <div><span>多流</span> 各路 delta 各自除 RMS 后 concat 喂共享 encoder；每路一个镜像解码器</div>
         <div><span>状态分支</span> StateResidualMLP，13 维 delta</div>
